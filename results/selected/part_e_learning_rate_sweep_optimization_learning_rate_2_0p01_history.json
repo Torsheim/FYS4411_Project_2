@@ -1,0 +1,17 @@
+{
+  "config_path": "results/logs/sweep_configs/part_e_learning_rate_sweep_optimization_learning_rate_2_0p01.yaml",
+  "history_path": "results/selected/part_e_learning_rate_sweep_optimization_learning_rate_2_0p01_history.csv",
+  "samples_path": "results/processed/part_e_learning_rate_sweep_optimization_learning_rate_2_0p01_local_energies.csv",
+  "checkpoint_path": "results/checkpoints/part_e_learning_rate_sweep_optimization_learning_rate_2_0p01_model.npz",
+  "final_energy": 3.0811120790664432,
+  "final_error": 0.01255570020746366,
+  "acceptance_rate": 0.9908333333333333,
+  "num_particles": 2.0,
+  "dimensions": 2.0,
+  "num_hidden": 16.0,
+  "learning_rate": 0.01,
+  "sampler": "importance",
+  "include_interaction": true,
+  "exact_non_interacting_energy": 2.0,
+  "exact_interacting_2p2d_energy": 3.0
+}

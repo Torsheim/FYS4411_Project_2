@@ -1,0 +1,17 @@
+{
+  "config_path": "results/logs/sweep_configs/part_b_learning_rate_sweep_optimization_learning_rate_2_0p03.yaml",
+  "history_path": "results/selected/part_b_learning_rate_sweep_optimization_learning_rate_2_0p03_history.csv",
+  "samples_path": "results/processed/part_b_learning_rate_sweep_optimization_learning_rate_2_0p03_local_energies.csv",
+  "checkpoint_path": "results/checkpoints/part_b_learning_rate_sweep_optimization_learning_rate_2_0p03_model.npz",
+  "final_energy": 0.499963239240859,
+  "final_error": 8.522409472403413e-06,
+  "acceptance_rate": 0.7335,
+  "num_particles": 1.0,
+  "dimensions": 1.0,
+  "num_hidden": 2.0,
+  "learning_rate": 0.03,
+  "sampler": "metropolis",
+  "include_interaction": false,
+  "exact_non_interacting_energy": 0.5,
+  "exact_interacting_2p2d_energy": null
+}

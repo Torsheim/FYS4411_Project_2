@@ -1,0 +1,17 @@
+{
+  "config_path": "results/logs/sweep_configs/part_e_hidden_units_sweep_model_num_hidden_3_32.yaml",
+  "history_path": "results/selected/part_e_hidden_units_sweep_model_num_hidden_3_32_history.csv",
+  "samples_path": "results/processed/part_e_hidden_units_sweep_model_num_hidden_3_32_local_energies.csv",
+  "checkpoint_path": "results/checkpoints/part_e_hidden_units_sweep_model_num_hidden_3_32_model.npz",
+  "final_energy": 3.102536230252256,
+  "final_error": 0.014613109484014059,
+  "acceptance_rate": 0.99075,
+  "num_particles": 2.0,
+  "dimensions": 2.0,
+  "num_hidden": 32.0,
+  "learning_rate": 0.005,
+  "sampler": "importance",
+  "include_interaction": true,
+  "exact_non_interacting_energy": 2.0,
+  "exact_interacting_2p2d_energy": 3.0
+}

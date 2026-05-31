@@ -1,0 +1,17 @@
+{
+  "config_path": "configs/part_e_2p2d_interacting_long.yaml",
+  "history_path": "results/selected/part_e_2p2d_interacting_long.csv",
+  "samples_path": "results/processed/part_e_2p2d_interacting_long_local_energies.csv",
+  "checkpoint_path": "results/checkpoints/part_e_2p2d_interacting_long_model.npz",
+  "final_energy": 3.08256185914354,
+  "final_error": 0.008184044724101096,
+  "acceptance_rate": 0.9905333333333334,
+  "num_particles": 2.0,
+  "dimensions": 2.0,
+  "num_hidden": 16.0,
+  "learning_rate": 0.005,
+  "sampler": "importance",
+  "include_interaction": true,
+  "exact_non_interacting_energy": 2.0,
+  "exact_interacting_2p2d_energy": 3.0
+}

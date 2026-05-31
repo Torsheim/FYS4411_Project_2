@@ -1,0 +1,17 @@
+{
+  "config_path": "configs/part_b_2p2d_no_interaction_bruteforce.yaml",
+  "history_path": "results/selected/part_b_2p2d_no_interaction_bruteforce.csv",
+  "samples_path": "results/processed/part_b_2p2d_no_interaction_bruteforce_local_energies.csv",
+  "checkpoint_path": "results/checkpoints/part_b_2p2d_no_interaction_bruteforce_model.npz",
+  "final_energy": 1.9999991949022549,
+  "final_error": 2.9609501383215416e-06,
+  "acceptance_rate": 0.433,
+  "num_particles": 2.0,
+  "dimensions": 2.0,
+  "num_hidden": 4.0,
+  "learning_rate": 0.02,
+  "sampler": "metropolis",
+  "include_interaction": false,
+  "exact_non_interacting_energy": 2.0,
+  "exact_interacting_2p2d_energy": 3.0
+}

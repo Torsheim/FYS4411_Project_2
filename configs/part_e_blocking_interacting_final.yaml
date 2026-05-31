@@ -1,0 +1,3 @@
+blocking:
+  input_path: results/processed/part_e_2p2d_interacting_final_local_energies.csv
+  output_path: results/selected/part_e_blocking_interacting_final.csv

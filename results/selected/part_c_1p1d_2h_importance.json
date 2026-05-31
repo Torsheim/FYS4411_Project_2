@@ -1,0 +1,17 @@
+{
+  "config_path": "configs/part_c_1p1d_2h_importance.yaml",
+  "history_path": "results/selected/part_c_1p1d_2h_importance.csv",
+  "samples_path": "results/processed/part_c_1p1d_2h_importance_local_energies.csv",
+  "checkpoint_path": "results/checkpoints/part_c_1p1d_2h_importance_model.npz",
+  "final_energy": 0.499987870012329,
+  "final_error": 1.7037754260276922e-06,
+  "acceptance_rate": 0.997875,
+  "num_particles": 1.0,
+  "dimensions": 1.0,
+  "num_hidden": 2.0,
+  "learning_rate": 0.03,
+  "sampler": "importance",
+  "include_interaction": false,
+  "exact_non_interacting_energy": 0.5,
+  "exact_interacting_2p2d_energy": null
+}
