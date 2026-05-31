@@ -69,10 +69,23 @@
 \newcommand{\sigmoid}{\operatorname{sigmoid}}
 \newcommand{\code}[1]{\texttt{#1}}
 
+
+% -------------------- Floatless report objects --------------------
+% The report uses a two-column style. To avoid figures and tables drifting away
+% from the discussion, most result objects are placed directly in the text flow
+% using \captionof instead of floating environments.
+\newcommand{\reportfigure}[3]{%
+\begin{center}
+\includegraphics[width=\columnwidth]{#1}
+\captionof{figure}{#2}
+\label{#3}
+\end{center}
+}
+
 % -------------------- Title --------------------
 \title{\vspace{-1.0cm}\Large FYS4411/FYS9411: Computational Physics II\\[0.35cm]
-\Huge Project 2\\[0.20cm]
-\LARGE Variational Monte Carlo with Neural Quantum States}
+\Huge Variational Monte Carlo with Neural Quantum States\\[0.20cm]
+\LARGE Gaussian-binary RBMs for harmonic quantum dots}
 \author{Marius Torsheim\\Department of Physics, University of Oslo}
 \date{Spring 2026}
 
@@ -83,9 +96,9 @@
 \begin{center}
 {\large FYS4411/FYS9411: Computational Physics II\par}
 \vspace{0.25cm}
-{\LARGE\bfseries Project 2\par}
+{\LARGE\bfseries Variational Monte Carlo with Neural Quantum States\par}
 \vspace{0.12cm}
-{\large Variational Monte Carlo with Neural Quantum States\par}
+{\large Gaussian-binary restricted Boltzmann machines for harmonic quantum dots\par}
 \vspace{0.35cm}
 {Marius Torsheim\\Department of Physics, University of Oslo\par}
 \vspace{0.15cm}
@@ -110,9 +123,9 @@ Quantum many-body problems are difficult because the wave function depends on ma
 
 In this project the trial wave function is represented by a restricted Boltzmann machine (RBM). This follows the neural-network quantum state idea introduced by Carleo and Troyer \cite{carleo2017}. The RBM is used as an explicit analytical function of the particle coordinates. Its visible nodes represent the continuous particle coordinates, while the hidden layer introduces additional nonlinear correlations. Because the coordinates are continuous, I use a Gaussian-binary RBM, with Gaussian visible nodes and binary hidden nodes.
 
-The project has three main goals. First, the analytical expressions for the local energy, parameter derivatives, and quantum force must be derived and implemented. Second, the implementation must be validated on non-interacting harmonic oscillator systems with known exact energies. Third, the Coulomb interaction must be included for two particles in two dimensions, where an exact benchmark is available: for $\omega=1$, the interacting ground-state energy is $E=3.0$ a.u. \cite{taut1993}. The optional replacement of the RBM by a feed-forward neural network was not attempted; instead, the focus was on obtaining a clear and tested RBM/VMC implementation.
+The work has three main goals. First, the analytical expressions for the local energy, parameter derivatives, and quantum force must be derived and implemented. Second, the implementation must be validated on non-interacting harmonic oscillator systems with known exact energies. Third, the Coulomb interaction must be included for two particles in two dimensions, where an exact benchmark is available: for $\omega=1$, the interacting ground-state energy is $E=3.0$ a.u. \cite{taut1993}. The optional replacement of the RBM by a feed-forward neural network was not attempted; instead, the focus was on obtaining a clear and tested RBM/VMC implementation.
 
-The report is organized as follows. Section~\ref{sec:theory} describes the physical systems, the RBM wave function, the analytical derivatives, and the VMC estimators. Section~\ref{sec:methodology} explains the numerical algorithms and implementation. Section~\ref{sec:results} presents the benchmark calculations, statistical analysis, and interacting results. Section~\ref{sec:conclusion} summarizes the main conclusions and possible improvements. The detailed analytical derivation for Project 2a is included in Appendix~\ref{app:derivations}, while code organization and reproducibility information are summarized in Appendix~\ref{app:code}.
+The report is organized as a scientific report rather than as separate answers to the assignment items. Section~\ref{sec:theory} describes the physical systems, the RBM wave function, the analytical derivatives, and the VMC estimators. Section~\ref{sec:methodology} explains the numerical algorithms and implementation. Section~\ref{sec:results} presents validation tests, statistical analysis, and interacting quantum-dot results. Section~\ref{sec:conclusion} summarizes the main conclusions and possible improvements. The detailed analytical derivation is included in Appendix~\ref{app:derivations}, while code organization and reproducibility information are summarized in Appendix~\ref{app:code}.
 
 \section{Theory}\label{sec:theory}
 
@@ -148,7 +161,7 @@ V(\bX)=\frac{1}{2}\omega^2(x_1^2+y_1^2+x_2^2+y_2^2)
 \frac{1}{\sqrt{(x_1-x_2)^2+(y_1-y_2)^2}}.
 \label{eq:2p2d-potential}
 \end{equation}
-For $\omega=1$, the exact interacting value is $E_0=3.0$ a.u. \cite{taut1993}. This value is used as the central benchmark for the final part of the project.
+For $\omega=1$, the exact interacting value is $E_0=3.0$ a.u. \cite{taut1993}. This value is used as the central benchmark for the interacting calculation. Throughout the report, energies are reported in atomic units (a.u.). The oscillator frequency is fixed to $\omega=1$ in atomic units. Monte Carlo iteration numbers, acceptance rates, numbers of hidden units, and learning rates are dimensionless. The Langevin time step $\Delta t$ is the dimensionless algorithmic time step used in the importance-sampling proposal.
 
 \subsection{Variational Monte Carlo}
 
@@ -319,7 +332,7 @@ for iteration = 1, ..., n_iterations:
     estimate gradients 2(<E_L O> - <E_L><O>)
     update a, b, W using ADAM
     write iteration, energy, error, acceptance rate, gradient norm
-save final parameters and local energy samples
+save final parameters and local-energy samples
 \end{lstlisting}
 
 The same training loop is used for both brute-force and importance sampling; only the sampler changes.
@@ -340,17 +353,17 @@ The non-interacting cases are especially important because they test the RBM, lo
 
 The main non-interacting runs used $\sigma=1$, small random parameter initialization, ADAM optimization, and fixed random seeds. Brute-force Metropolis used symmetric random-walk proposals, while importance sampling used the time step $\Delta t$ specified in each configuration. For the interacting system, two longer production runs were analyzed. The first used
 \begin{equation}
-P=2,\quad D=2,\quad \omega=1,
-\quad \Nh=16,
-\quad \eta=0.005,
-\quad \Delta t=0.08,
+\begin{aligned}
+P&=2, & D&=2, & \omega&=1,\\
+\Nh&=16, & \eta&=0.005, & \Delta t&=0.08 .
+\end{aligned}
 \end{equation}
 with 30000 samples per optimization iteration and 400 optimization iterations. Motivated by the hyperparameter sweeps, a final run used
 \begin{equation}
-P=2,\quad D=2,\quad \omega=1,
-\quad \Nh=32,
-\quad \eta=0.01,
-\quad \Delta t=0.08,
+\begin{aligned}
+P&=2, & D&=2, & \omega&=1,\\
+\Nh&=32, & \eta&=0.01, & \Delta t&=0.08 .
+\end{aligned}
 \end{equation}
 with 50000 samples per optimization iteration and 600 optimization iterations. This final run was included to test whether the apparently favorable sweep choices combine into a better production calculation.
 
@@ -358,29 +371,28 @@ with 50000 samples per optimization iteration and 600 optimization iterations. T
 
 \subsection{Overall summary}
 
-Table~\ref{tab:summary} summarizes the main completed runs. The non-interacting energies are reproduced to high precision. The interacting runs are less accurate, but the energies are above the exact value, consistent with the variational principle. The final $\Nh=32$ run did not improve the best interacting energy estimate, which illustrates the sensitivity of the coupled sampling--optimization problem.
+Table~\ref{tab:summary} summarizes the main completed calculations and is the numerical reference point for the rest of this section. The table makes the contrast between the essentially exact non-interacting tests and the systematically higher interacting energies clear. The non-interacting harmonic-oscillator benchmarks are reproduced to high precision, validating the analytical local energy, parameter derivatives, samplers, and optimizer. The interacting quantum-dot calculations are less accurate, but the energies remain above the exact value, consistent with the variational principle. The final $\Nh=32$ production run did not improve the best energy estimate from the $\Nh=16$ run, illustrating that separately favorable hyperparameters do not necessarily combine into an optimal full calculation.
 
-\begin{table}[H]
-\centering
-\caption{Summary of the main completed energy estimates. The interacting benchmark is $E=3.0$.}
+\begin{center}
+\captionof{table}{Summary of the main completed energy estimates. All energies are in atomic units. The exact interacting benchmark is $E=3.0$.}
 \label{tab:summary}
 \setlength{\tabcolsep}{2.5pt}
 \begin{tabular}{@{}lccc@{}}
 \toprule
-Run & $E$ & error & exact \\
+Calculation & $E$ [a.u.] & error [a.u.] & exact [a.u.] \\
 \midrule
-b BF 1D & 0.499984 & $2.1\cdot10^{-6}$ & 0.5 \\
-b BF 2D & 1.999999 & $3.0\cdot10^{-6}$ & 2.0 \\
-c IS 1D & 0.499988 & $1.7\cdot10^{-6}$ & 0.5 \\
-c IS 2D & 1.999974 & $3.9\cdot10^{-6}$ & 2.0 \\
-e short & 3.1476 & 0.0150 & 3.0 \\
-e long & 3.0826 & 0.0082 & 3.0 \\
-e final & 3.0965 & 0.0069 & 3.0 \\
+BF, $P=1$, $D=1$ & 0.499984 & $2.1\cdot10^{-6}$ & 0.5 \\
+BF, $P=2$, $D=2$ & 1.999999 & $3.0\cdot10^{-6}$ & 2.0 \\
+IS, $P=1$, $D=1$ & 0.499988 & $1.7\cdot10^{-6}$ & 0.5 \\
+IS, $P=2$, $D=2$ & 1.999974 & $3.9\cdot10^{-6}$ & 2.0 \\
+interacting short & 3.1476 & 0.0150 & 3.0 \\
+interacting long & 3.0826 & 0.0082 & 3.0 \\
+interacting final & 3.0965 & 0.0069 & 3.0 \\
 \bottomrule
 \end{tabular}
-\end{table}
+\end{center}
 
-\subsection{Part b: brute-force Metropolis without interaction}
+\subsection{Non-interacting brute-force benchmarks}
 
 The first numerical test was the one-particle one-dimensional harmonic oscillator with two hidden nodes. The exact energy is $0.5$. Figure~\ref{fig:partb-1p1d} shows that the VMC energy converges rapidly to the exact value. The final value was
 \begin{equation}
@@ -388,55 +400,38 @@ E=0.499984\pm2.1\cdot10^{-6}.
 \end{equation}
 This confirms that the analytical local energy and RBM parameter optimization are consistent for the simplest case.
 
-\begin{figure}[H]
-\centering
-\includegraphics[width=\columnwidth]{part_b_energy_convergence_1p1d.pdf}
-\caption{Brute-force Metropolis energy convergence for one particle in one dimension with two hidden nodes. The dashed line is the exact value $E=0.5$.}
-\label{fig:partb-1p1d}
-\end{figure}
+\reportfigure{part_b_energy_convergence_1p1d.pdf}{Brute-force Metropolis energy convergence for one particle in one dimension with two hidden nodes. The dashed line is the exact value $E=0.5$.}{fig:partb-1p1d}
 
-The same non-interacting test was repeated for two particles in two dimensions. In this case $P=2$, $D=2$, and the exact energy is $E=2.0$. The result is shown in Figure~\ref{fig:partb-2p2d}. The final energy was $E=1.999999\pm3.0\cdot10^{-6}$.
+The same non-interacting test was repeated for two particles in two dimensions. In this case $P=2$, $D=2$, and the exact energy is $E=2.0$. The result is shown in Figure~\ref{fig:partb-2p2d}. The final energy was $E=1.999999\pm3.0\cdot10^{-6}$. Table~\ref{tab:partb-nonint} gives the final numerical line of the one-dimensional benchmark and is included to document the precision and acceptance rate used for the first validation case.
 
-\begin{figure}[H]
-\centering
-\includegraphics[width=\columnwidth]{part_b_energy_convergence_2p2d.pdf}
-\caption{Brute-force Metropolis energy convergence for two particles in two dimensions without interaction. The exact energy is $E=2.0$.}
-\label{fig:partb-2p2d}
-\end{figure}
+\reportfigure{part_b_energy_convergence_2p2d.pdf}{Brute-force Metropolis energy convergence for two particles in two dimensions without interaction. The exact energy is $E=2.0$.}{fig:partb-2p2d}
 
-\begin{table}[H]
-\centering
-\caption{Final iteration of the simplest non-interacting brute-force Metropolis run.}
+\begin{center}
+\captionof{table}{Final iteration of the one-particle one-dimensional brute-force Metropolis benchmark. Energies are in atomic units.}
 \label{tab:partb-nonint}
 \setlength{\tabcolsep}{3pt}
 \begin{tabular}{@{}cccc@{}}
 \toprule
-Iter. & $E$ & error & acc. \\
+Iter. & $E$ [a.u.] & error [a.u.] & acc. \\
 \midrule
 100 & 0.499984 & $2.1\cdot10^{-6}$ & 0.728 \\
 \bottomrule
 \end{tabular}
-\end{table}
+\end{center}
 
-\subsection{Learning-rate and hidden-node dependence in Part b}
+\subsection{Hyperparameter sensitivity of the Gaussian benchmark}
 
-The learning-rate sweep for the one-dimensional non-interacting problem is shown in Figure~\ref{fig:partb-lr} and Table~\ref{tab:partb-lr}. All tested learning rates reproduced the exact energy well, but larger learning rates gave larger deviations and larger statistical errors. The best values in this small sweep were $\eta=0.005$ and $\eta=0.03$, both of which gave energies within roughly $10^{-5}$ of the exact result.
+The learning-rate sweep for the one-dimensional non-interacting problem is shown in Figure~\ref{fig:partb-lr} and Table~\ref{tab:partb-lr}. Both are needed because the plotted differences are very small on the scale of the benchmark energy. All tested learning rates reproduced the exact energy well, but larger learning rates gave larger deviations and larger statistical errors. The best values in this small sweep were $\eta=0.005$ and $\eta=0.03$, both of which gave energies within roughly $10^{-5}$ of the exact result.
 
-\begin{figure}[H]
-\centering
-\includegraphics[width=\columnwidth]{part_b_learning_rate_sweep.pdf}
-\caption{Learning-rate sweep for the non-interacting one-particle one-dimensional system. The scale is very narrow because all points are close to the exact energy.}
-\label{fig:partb-lr}
-\end{figure}
+\reportfigure{part_b_learning_rate_sweep.pdf}{Learning-rate sweep for the one-particle one-dimensional Gaussian benchmark. The scale is very narrow because all points are close to the exact energy.}{fig:partb-lr}
 
-\begin{table}[H]
-\centering
-\caption{Learning-rate sweep for Part b.}
+\begin{center}
+\captionof{table}{Learning-rate sweep for the one-dimensional non-interacting benchmark. Energies are in atomic units.}
 \label{tab:partb-lr}
 \setlength{\tabcolsep}{3pt}
 \begin{tabular}{@{}ccc@{}}
 \toprule
-$\eta$ & $E$ & error \\
+$\eta$ & $E$ [a.u.] & error [a.u.] \\
 \midrule
 0.005 & 0.499994 & $1.6\cdot10^{-6}$ \\
 0.010 & 0.500050 & $1.2\cdot10^{-5}$ \\
@@ -445,25 +440,19 @@ $\eta$ & $E$ & error \\
 0.080 & 0.500140 & $4.3\cdot10^{-5}$ \\
 \bottomrule
 \end{tabular}
-\end{table}
+\end{center}
 
-The hidden-node sweep is shown in Figure~\ref{fig:partb-hidden} and Table~\ref{tab:partb-hidden}. The results show that the simple one-dimensional Gaussian problem does not require many hidden nodes. One or two hidden nodes are already sufficient, which is expected because the exact ground state is a Gaussian and the Gaussian part of the RBM can represent it directly.
+The hidden-node sweep is shown in Figure~\ref{fig:partb-hidden} and Table~\ref{tab:partb-hidden}. The figure emphasizes the flat dependence on hidden-layer size, while the table gives the small numerical differences. The results show that the simple one-dimensional Gaussian benchmark does not require many hidden nodes. One or two hidden nodes are already sufficient, which is expected because the exact ground state is a Gaussian and the Gaussian part of the RBM can represent it directly.
 
-\begin{figure}[H]
-\centering
-\includegraphics[width=\columnwidth]{part_b_hidden_units_sweep.pdf}
-\caption{Hidden-node sweep for the non-interacting one-particle one-dimensional system. The plot uses a narrow vertical scale around $E=0.5$.}
-\label{fig:partb-hidden}
-\end{figure}
+\reportfigure{part_b_hidden_units_sweep.pdf}{Hidden-node sweep for the one-particle one-dimensional Gaussian benchmark. The plot uses a narrow vertical scale around $E=0.5$.}{fig:partb-hidden}
 
-\begin{table}[H]
-\centering
-\caption{Hidden-node sweep for Part b.}
+\begin{center}
+\captionof{table}{Hidden-node sweep for the one-dimensional non-interacting benchmark. Energies are in atomic units.}
 \label{tab:partb-hidden}
 \setlength{\tabcolsep}{3pt}
 \begin{tabular}{@{}ccc@{}}
 \toprule
-$N_h$ & $E$ & error \\
+$N_h$ & $E$ [a.u.] & error [a.u.] \\
 \midrule
 1 & 0.500004 & $5.1\cdot10^{-6}$ \\
 2 & 0.499999 & $1.4\cdot10^{-6}$ \\
@@ -472,9 +461,9 @@ $N_h$ & $E$ & error \\
 16 & 0.500020 & $4.4\cdot10^{-5}$ \\
 \bottomrule
 \end{tabular}
-\end{table}
+\end{center}
 
-\subsection{Part c: importance sampling}
+\subsection{Importance sampling benchmarks}
 
 Importance sampling was then added using the quantum force from Eq.~\eqref{eq:quantum-force}. For the one-particle one-dimensional system, the final energy was
 \begin{equation}
@@ -482,12 +471,7 @@ E=0.499988\pm1.7\cdot10^{-6}.
 \end{equation}
 The convergence curve is shown in Figure~\ref{fig:partc-1p1d}. The acceptance rate was very high, about $0.998$, indicating that the time step was conservative.
 
-\begin{figure}[H]
-\centering
-\includegraphics[width=\columnwidth]{part_c_energy_convergence_1p1d_importance.pdf}
-\caption{Importance-sampling energy convergence for one particle in one dimension. The exact value is $E=0.5$.}
-\label{fig:partc-1p1d}
-\end{figure}
+\reportfigure{part_c_energy_convergence_1p1d_importance.pdf}{Importance-sampling energy convergence for one particle in one dimension. The exact value is $E=0.5$.}{fig:partc-1p1d}
 
 For the non-interacting two-particle two-dimensional case, the importance-sampling result was
 \begin{equation}
@@ -495,36 +479,25 @@ E=1.999974\pm3.9\cdot10^{-6}.
 \end{equation}
 Figure~\ref{fig:partc-2p2d} shows that this also converges to the exact value. Compared with brute-force Metropolis, the importance sampler had a much larger acceptance rate, but not necessarily a visibly smaller error in these simple systems. This is because the systems are already easy for brute-force Metropolis. The usefulness of importance sampling becomes more apparent for more complicated systems where random-walk proposals mix slowly.
 
-\begin{figure}[H]
-\centering
-\includegraphics[width=\columnwidth]{part_c_energy_convergence_2p2d_importance.pdf}
-\caption{Importance-sampling energy convergence for two particles in two dimensions without interaction. The exact value is $E=2.0$.}
-\label{fig:partc-2p2d}
-\end{figure}
+\reportfigure{part_c_energy_convergence_2p2d_importance.pdf}{Importance-sampling energy convergence for two particles in two dimensions without interaction. The exact value is $E=2.0$.}{fig:partc-2p2d}
 
-\subsection{Part d: blocking analysis}
+\subsection{Autocorrelation and blocking analysis}
 
-Blocking was applied to the local-energy samples from the non-interacting importance-sampling run. Figure~\ref{fig:partd-blocking} shows the estimated standard error as the block size increases. The conservative estimate was
+Blocking was applied to the local-energy samples from the non-interacting importance-sampling run. Figure~\ref{fig:partd-blocking} shows the estimated standard error as the block size increases, while Table~\ref{tab:partd-blocking} lists selected blocking levels used to choose the conservative error estimate. The conservative estimate was
 \begin{equation}
 \sigma_{\mathrm{block}}=1.97\cdot10^{-5}.
 \end{equation}
-This is larger than the naive final iteration error, as expected for correlated samples. It is therefore a more conservative uncertainty estimate.
+This is larger than the naive final-iteration error, as expected for correlated samples. It is therefore a more conservative uncertainty estimate.
 
-\begin{figure}[H]
-\centering
-\includegraphics[width=\columnwidth]{part_d_blocking_importance.pdf}
-\caption{Blocking analysis for the one-dimensional importance-sampling run. The conservative error is taken from the maximum stable block-error estimate.}
-\label{fig:partd-blocking}
-\end{figure}
+\reportfigure{part_d_blocking_importance.pdf}{Blocking analysis for the one-dimensional importance-sampling run. The conservative error is taken from the maximum stable block-error estimate.}{fig:partd-blocking}
 
-\begin{table}[H]
-\centering
-\caption{Selected blocking estimates for the non-interacting importance-sampling run.}
+\begin{center}
+\captionof{table}{Selected blocking estimates for the non-interacting importance-sampling run.}
 \label{tab:partd-blocking}
 \setlength{\tabcolsep}{3pt}
 \begin{tabular}{@{}ccc@{}}
 \toprule
-Level & block size & error \\
+Level & block size & error [a.u.] \\
 \midrule
 5 & 32 & $1.06\cdot10^{-5}$ \\
 7 & 128 & $1.38\cdot10^{-5}$ \\
@@ -532,83 +505,60 @@ Level & block size & error \\
 10 & 1024 & $1.52\cdot10^{-5}$ \\
 \bottomrule
 \end{tabular}
-\end{table}
+\end{center}
 
-\subsection{Part e: interacting two-particle quantum dot}
+\subsection{Interacting two-particle quantum dot}
 
 The interacting two-particle two-dimensional system is the most demanding test. The exact benchmark is $E=3.0$ a.u. The first interacting run used $\Nh=8$ and learning rate $0.01$. The energy remained around $3.15$ at the end of the run, as shown in Figure~\ref{fig:parte-short}. This run is useful as a baseline, but it is not the best estimate.
 
-\begin{figure}[H]
-\centering
-\includegraphics[width=\columnwidth]{part_e_energy_convergence_interacting.pdf}
-\caption{Initial interacting run for two particles in two dimensions. The result remains above the exact value $E=3.0$ and shows significant fluctuations.}
-\label{fig:parte-short}
-\end{figure}
+\reportfigure{part_e_energy_convergence_interacting.pdf}{Initial interacting run for two particles in two dimensions. The result remains above the exact value $E=3.0$ and shows significant fluctuations.}{fig:parte-short}
 
-A longer run was then performed with $\Nh=16$, learning rate $0.005$, time step $\Delta t=0.08$, 30000 samples per iteration, and 400 optimization iterations. The convergence is shown in Figure~\ref{fig:parte-long}. The final iteration gave
+The numerical values from the long interacting production runs are compared in Table~\ref{tab:e-main}. A longer run was then performed with $\Nh=16$, learning rate $0.005$, time step $\Delta t=0.08$, 30000 samples per iteration, and 400 optimization iterations. The convergence is shown in Figure~\ref{fig:parte-long}. The final iteration gave
 \begin{equation}
 E=3.08256\pm0.00818,
 \end{equation}
-while blocking gave a conservative error of $0.0243$. The energy is still above the exact value, but the improvement relative to the short run is clear.
+while blocking gave a conservative error of $0.0243$. The energy is still above the exact value, but the improvement relative to the short run in Figure~\ref{fig:parte-short} is clear.
 
 The hyperparameter sweeps suggested that larger hidden layers and a learning rate around $0.01$ could improve the result. A final production run was therefore performed with $\Nh=32$, $\eta=0.01$, $\Delta t=0.08$, 50000 samples per iteration, and 600 optimization iterations. This run gave
 \begin{equation}
 E=3.09649\pm0.00685,
 \end{equation}
-with a conservative blocking error of $0.0201$. This did not improve the $\Nh=16$ energy, although it produced a slightly smaller naive error and a comparable blocking error. The comparison shows that the best settings found in separate one-parameter sweeps do not necessarily combine optimally. It also suggests that the interacting RBM optimization is limited by systematic optimization and ansatz errors, not only by Monte Carlo sampling noise.
+with a conservative blocking error of $0.0201$. This did not improve the $\Nh=16$ energy, although it produced a slightly smaller naive error and a comparable blocking error, as seen by comparing Figures~\ref{fig:parte-long} and~\ref{fig:parte-final} and the values in Table~\ref{tab:e-main}. The comparison shows that the best settings found in separate one-parameter sweeps do not necessarily combine optimally. It also suggests that the interacting RBM optimization is limited by systematic optimization and ansatz errors, not only by Monte Carlo sampling noise.
 
 
-\begin{figure}[H]
-\centering
-\includegraphics[width=\columnwidth]{part_e_energy_convergence_interacting_long.pdf}
-\caption{Longer interacting run with $\Nh=16$. The energy decreases from about $3.23$ to about $3.08$, approaching but not reaching the exact value $E=3.0$.}
-\label{fig:parte-long}
-\end{figure}
+\reportfigure{part_e_energy_convergence_interacting_long.pdf}{Longer interacting run with $\Nh=16$. The energy decreases from about $3.23$ to about $3.08$, approaching but not reaching the exact value $E=3.0$.}{fig:parte-long}
 
-\begin{figure}[H]
-\centering
-\includegraphics[width=\columnwidth]{part_e_energy_convergence_interacting_final.pdf}
-\caption{Final interacting run with $\Nh=32$, learning rate $\eta=0.01$, and time step $\Delta t=0.08$. The final iteration gave $E=3.09649\pm0.00685$, which is higher than the best $\Nh=16$ long run despite using more hidden nodes and more samples.}
-\label{fig:parte-final}
-\end{figure}
+\reportfigure{part_e_energy_convergence_interacting_final.pdf}{Final interacting run with $\Nh=32$, learning rate $\eta=0.01$, and time step $\Delta t=0.08$. The final iteration gave $E=3.09649\pm0.00685$, which is higher than the best $\Nh=16$ long run despite using more hidden nodes and more samples.}{fig:parte-final}
 
-\begin{table}[H]
-\centering
-\caption{Long interacting production runs. The $N_h=16$ run gave the lowest final energy.}
+\begin{center}
+\captionof{table}{Long interacting production runs. The $N_h=16$ run gave the lowest final energy.}
 \label{tab:e-main}
 \setlength{\tabcolsep}{3pt}
 \begin{tabular}{@{}cccc@{}}
 \toprule
-$N_h$ & $\eta$ & $E$ & error \\
+$N_h$ & $\eta$ & $E$ [a.u.] & error [a.u.] \\
 \midrule
 16 & 0.005 & 3.08256 & 0.00818 \\
 32 & 0.010 & 3.09649 & 0.00685 \\
 \bottomrule
 \end{tabular}
-\end{table}
+\end{center}
 
-\begin{figure}[H]
-\centering
-\includegraphics[width=\columnwidth]{part_e_blocking_interacting_long.pdf}
-\caption{Blocking analysis for the long interacting run. The conservative blocking error is about $0.0243$, larger than the naive iteration error.}
-\label{fig:parte-blocking}
-\end{figure}
+The blocking analysis of the two interacting production runs is shown in Figures~\ref{fig:parte-blocking} and~\ref{fig:parte-blocking-final}; these figures justify quoting blocking errors in addition to the naive final-iteration errors.
 
-\begin{figure}[H]
-\centering
-\includegraphics[width=\columnwidth]{part_e_blocking_interacting_final.pdf}
-\caption{Blocking analysis for the final $\Nh=32$ interacting run. The conservative blocking error is about $0.0201$, comparable to the long $\Nh=16$ run.}
-\label{fig:parte-blocking-final}
-\end{figure}
+\reportfigure{part_e_blocking_interacting_long.pdf}{Blocking analysis for the long interacting run. The conservative blocking error is about $0.0243$, larger than the naive iteration error.}{fig:parte-blocking}
 
-\begin{table}[H]
-\centering
-\caption{Selected blocking estimates for the long interacting run with $N_h=16$.}
+\reportfigure{part_e_blocking_interacting_final.pdf}{Blocking analysis for the final $\Nh=32$ interacting run. The conservative blocking error is about $0.0201$, comparable to the long $\Nh=16$ run.}{fig:parte-blocking-final}
+
+The selected numerical values from the long-run blocking curve are listed in Table~\ref{tab:e-blocking}; the largest value is the conservative error quoted for the $N_h=16$ result.
+
+\begin{center}
+\captionof{table}{Selected blocking estimates for the long interacting run with $N_h=16$.}
 \label{tab:e-blocking}
 \setlength{\tabcolsep}{3pt}
 \begin{tabular}{@{}ccc@{}}
 \toprule
-Level & block size & error \\
+Level & block size & error [a.u.] \\
 \midrule
 5 & 32 & 0.01584 \\
 8 & 256 & 0.01561 \\
@@ -616,30 +566,24 @@ Level & block size & error \\
 13 & 8192 & 0.02427 \\
 \bottomrule
 \end{tabular}
-\end{table}
+\end{center}
 
 
 \subsection{Interacting hyperparameter sweeps}
 
 The interacting system was also tested with several hidden-node counts, learning rates, and importance-sampling time steps. These sweeps are not full production runs, but they guide the choice of final parameters.
 
-Figure~\ref{fig:parte-hidden} and Table~\ref{tab:parte-hidden} show the hidden-node sweep. The best value in this sweep was obtained with $\Nh=32$, which gave $E=3.10254\pm0.01461$. The result suggests that the interacting system benefits from more hidden nodes than the non-interacting system.
+Figure~\ref{fig:parte-hidden} and Table~\ref{tab:parte-hidden} show the hidden-node sweep. The best value in this sweep was obtained with $\Nh=32$, which gave $E=3.10254\pm0.01461$. The result suggests that the interacting system benefits from more hidden nodes than the non-interacting system, although the production comparison in Table~\ref{tab:e-main} shows that a larger hidden layer alone is not sufficient to guarantee a better final optimization.
 
-\begin{figure}[H]
-\centering
-\includegraphics[width=\columnwidth]{part_e_hidden_units_sweep.pdf}
-\caption{Hidden-node sweep for the interacting two-particle two-dimensional system. The best tested value was $\Nh=32$.}
-\label{fig:parte-hidden}
-\end{figure}
+\reportfigure{part_e_hidden_units_sweep.pdf}{Hidden-node sweep for the interacting two-particle two-dimensional system. The best tested value was $\Nh=32$.}{fig:parte-hidden}
 
-\begin{table}[H]
-\centering
-\caption{Hidden-node sweep for the interacting system.}
+\begin{center}
+\captionof{table}{Hidden-node sweep for the interacting system.}
 \label{tab:parte-hidden}
 \setlength{\tabcolsep}{3pt}
 \begin{tabular}{@{}ccc@{}}
 \toprule
-$N_h$ & $E$ & error \\
+$N_h$ & $E$ [a.u.] & error [a.u.] \\
 \midrule
 4 & 3.1881 & 0.0138 \\
 8 & 3.1859 & 0.0147 \\
@@ -647,25 +591,19 @@ $N_h$ & $E$ & error \\
 32 & 3.1025 & 0.0146 \\
 \bottomrule
 \end{tabular}
-\end{table}
+\end{center}
 
-The learning-rate sweep is shown in Figure~\ref{fig:parte-lr} and Table~\ref{tab:parte-lr}. The smallest learning rate, $0.002$, converged too slowly. The best tested values were $0.01$ and $0.02$, both giving energies close to $3.08$ in the shorter sweep. This motivated the choice of $\eta=0.01$ for the final $\Nh=32$ run, although the final combined run did not beat the earlier $\Nh=16$ production calculation.
+The learning-rate sweep is shown in Figure~\ref{fig:parte-lr} and Table~\ref{tab:parte-lr}. These results motivated testing a larger learning rate in the final production calculation. The smallest learning rate, $0.002$, converged too slowly. The best tested values were $0.01$ and $0.02$, both giving energies close to $3.08$ in the shorter sweep. This motivated the choice of $\eta=0.01$ for the final $\Nh=32$ run, although the final combined run did not beat the earlier $\Nh=16$ production calculation.
 
-\begin{figure}[H]
-\centering
-\includegraphics[width=\columnwidth]{part_e_learning_rate_sweep.pdf}
-\caption{Learning-rate sweep for the interacting system. Learning rates around $0.01$ and $0.02$ were best among the tested values.}
-\label{fig:parte-lr}
-\end{figure}
+\reportfigure{part_e_learning_rate_sweep.pdf}{Learning-rate sweep for the interacting system. Learning rates around $0.01$ and $0.02$ were best among the tested values.}{fig:parte-lr}
 
-\begin{table}[H]
-\centering
-\caption{Learning-rate sweep for the interacting system.}
+\begin{center}
+\captionof{table}{Learning-rate sweep for the interacting system.}
 \label{tab:parte-lr}
 \setlength{\tabcolsep}{3pt}
 \begin{tabular}{@{}ccc@{}}
 \toprule
-$\eta$ & $E$ & error \\
+$\eta$ & $E$ [a.u.] & error [a.u.] \\
 \midrule
 0.002 & 3.2183 & 0.0149 \\
 0.005 & 3.1709 & 0.0391 \\
@@ -673,25 +611,19 @@ $\eta$ & $E$ & error \\
 0.020 & 3.0830 & 0.0177 \\
 \bottomrule
 \end{tabular}
-\end{table}
+\end{center}
 
-The time-step sweep is shown in Figure~\ref{fig:parte-dt} and Table~\ref{tab:parte-dt}. Very small time steps produced high acceptance rates but poor optimization, probably because the chain moved too slowly through configuration space. The best tested time step in this sweep was $\Delta t=0.08$, although this sweep used learning rate $0.005$ and $\Nh=16$, so the conclusion should not be over-interpreted.
+The time-step sweep is shown in Figure~\ref{fig:parte-dt} and Table~\ref{tab:parte-dt}. These two objects are used together because the figure shows the trend, while the table gives the values needed to choose the production time step. Very small time steps produced high acceptance rates but poor optimization, probably because the chain moved too slowly through configuration space. The best tested time step in this sweep was $\Delta t=0.08$, although this sweep used learning rate $0.005$ and $\Nh=16$, so the conclusion should not be over-interpreted.
 
-\begin{figure}[H]
-\centering
-\includegraphics[width=\columnwidth]{part_e_time_step_sweep.pdf}
-\caption{Importance-sampling time-step sweep for the interacting system. The smallest time steps had very high acceptance but worse final energies.}
-\label{fig:parte-dt}
-\end{figure}
+\reportfigure{part_e_time_step_sweep.pdf}{Importance-sampling time-step sweep for the interacting system. The smallest time steps had very high acceptance but worse final energies.}{fig:parte-dt}
 
-\begin{table}[H]
-\centering
-\caption{Time-step sweep for the interacting system.}
+\begin{center}
+\captionof{table}{Time-step sweep for the interacting system.}
 \label{tab:parte-dt}
 \setlength{\tabcolsep}{3pt}
 \begin{tabular}{@{}ccc@{}}
 \toprule
-$\Delta t$ & $E$ & error \\
+$\Delta t$ & $E$ [a.u.] & error [a.u.] \\
 \midrule
 0.03 & 3.2771 & 0.0138 \\
 0.05 & 3.2462 & 0.0152 \\
@@ -699,7 +631,7 @@ $\Delta t$ & $E$ & error \\
 0.12 & 3.1719 & 0.0168 \\
 \bottomrule
 \end{tabular}
-\end{table}
+\end{center}
 
 
 \subsection{Reliability and numerical precision}
@@ -708,7 +640,7 @@ The reliability of the code is strongest for the non-interacting systems, where 
 
 The interacting system is less precise. The best long run gives an energy about $0.083$ above the exact value, or roughly $2.8\%$ relative error. The final $\Nh=32$ run gives an energy about $0.0965$ above the exact value, or roughly $3.2\%$ relative error. These deviations are larger than the statistical error estimates, meaning that the dominant error is not sampling noise alone. It is most likely a combination of incomplete optimization, limited expressive power of the present RBM ansatz, and hyperparameter sensitivity. The energies remain above the exact value, which is consistent with the variational principle, but the interacting result is not yet fully optimized.
 
-The acceptance rates in importance sampling were around $0.99$ for many runs. Such high acceptance rates are safe, but they can also indicate that the time step is conservative. The time-step sweep supports this interpretation: the smallest time steps had the highest acceptance rates but did not give the best energies. Future production runs should therefore tune the time step and learning rate together rather than independently.
+The blocking curves in Figures~\ref{fig:parte-blocking} and~\ref{fig:parte-blocking-final}, together with Table~\ref{tab:e-blocking}, show that the interacting statistical uncertainty is much larger than in the non-interacting validation case. The acceptance rates in importance sampling were around $0.99$ for many runs. Such high acceptance rates are safe, but they can also indicate that the time step is conservative. The time-step sweep supports this interpretation: the smallest time steps had the highest acceptance rates but did not give the best energies. Future production runs should therefore tune the time step and learning rate together rather than independently.
 
 \section{Conclusion}\label{sec:conclusion}
 
@@ -720,7 +652,7 @@ The main lesson from the project is that neural quantum states can reproduce sim
 
 \appendix
 
-\section{Analytical details for Project 2a}\label{app:derivations}
+\section{Analytical details for the RBM ansatz}\label{app:derivations}
 
 This appendix gives the derivation used in the code. The wave function is
 \begin{equation}
@@ -794,7 +726,7 @@ which is the exact product ground state of $M=PD$ independent harmonic-oscillato
 \begin{equation}
 \EL^{(0)}=\frac{M\omega}{2}=\frac{PD\omega}{2}.
 \end{equation}
-At $\omega=1$, this is the benchmark $E=PD/2$ used in Parts b and c.
+At $\omega=1$, this is the benchmark $E=PD/2$ used in the non-interacting calculations.
 
 \section{Code structure and reproducibility}\label{app:code}
 
