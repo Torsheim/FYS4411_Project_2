@@ -1,9 +1,8 @@
 #!/usr/bin/env python3
-"""Generate report-ready figures from selected result files.
+"""Generate report-ready figures.
 
-The figures are generated at approximately one-column width with 10 pt labels,
-ticks, legends, and annotations, matching the report body text when included
-with width=\\columnwidth in LaTeX.
+All figures are generated with a fixed one-column physical size and 10 pt
+text. In LaTeX, include with width=\columnwidth.
 """
 
 from __future__ import annotations
@@ -60,10 +59,7 @@ def maybe_plot(
 
     try:
         func(input_path, output_path, *args, **kwargs)
-    except KeyError as exc:
-        print(f"Skipping {input_path}: {exc}")
-        return
-    except ValueError as exc:
+    except (KeyError, ValueError) as exc:
         print(f"Skipping {input_path}: {exc}")
         return
 
@@ -144,7 +140,6 @@ def main() -> None:
         "results/figures/part_b_learning_rate_sweep.pdf",
         x_column="optimization_learning_rate",
         exact_energy=0.5,
-        title="Part b: learning-rate sweep",
     )
 
     maybe_plot(
@@ -153,7 +148,6 @@ def main() -> None:
         "results/figures/part_b_hidden_units_sweep.pdf",
         x_column="model_num_hidden",
         exact_energy=0.5,
-        title="Part b: hidden-unit sweep",
     )
 
     maybe_plot(
@@ -162,7 +156,6 @@ def main() -> None:
         "results/figures/part_e_learning_rate_sweep.pdf",
         x_column="optimization_learning_rate",
         exact_energy=3.0,
-        title="Part e: learning-rate sweep",
     )
 
     maybe_plot(
@@ -171,7 +164,6 @@ def main() -> None:
         "results/figures/part_e_hidden_units_sweep.pdf",
         x_column="model_num_hidden",
         exact_energy=3.0,
-        title="Part e: hidden-unit sweep",
     )
 
     maybe_plot(
@@ -180,7 +172,6 @@ def main() -> None:
         "results/figures/part_e_time_step_sweep.pdf",
         x_column="sampler_time_step",
         exact_energy=3.0,
-        title="Part e: time-step sweep",
     )
 
 

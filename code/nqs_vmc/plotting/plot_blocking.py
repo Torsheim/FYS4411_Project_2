@@ -14,10 +14,14 @@ def _find_column(df: pd.DataFrame, candidates: list[str]) -> str:
     for candidate in candidates:
         if candidate.lower() in lower_to_original:
             return lower_to_original[candidate.lower()]
-    raise KeyError(f"None of the columns {candidates} were found. Available columns: {list(df.columns)}")
+    raise KeyError(f"None of {candidates} found. Available columns: {list(df.columns)}")
 
 
-def plot_blocking(csv_path: str | Path, output_path: str | Path, title: str = "Blocking analysis") -> None:
+def plot_blocking(
+    csv_path: str | Path,
+    output_path: str | Path,
+    title: str | None = None,
+) -> None:
     """Plot estimated standard error against block size."""
     df = pd.read_csv(csv_path)
 
@@ -34,10 +38,11 @@ def plot_blocking(csv_path: str | Path, output_path: str | Path, title: str = "B
     if (df[x_col] > 0).all():
         ax.set_xscale("log", base=2)
 
+    if title:
+        ax.set_title(title)
+
     ax.set_xlabel(pretty_label("block_size"))
     ax.set_ylabel(pretty_label("std_error"))
-    ax.set_title(title)
-
     ax.grid(True, alpha=0.35)
 
     save_report_figure(fig, output_path)

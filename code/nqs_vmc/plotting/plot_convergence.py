@@ -13,19 +13,13 @@ def plot_energy_convergence(
     csv_path: str | Path,
     output_path: str | Path,
     exact_energy: float | None = None,
-    title: str = "VMC energy convergence",
+    title: str | None = None,
 ) -> None:
     """Plot energy as a function of optimization iteration."""
     df = pd.read_csv(csv_path)
 
     if df.empty:
         raise ValueError(f"{csv_path} contains no rows.")
-
-    if "iteration" not in df.columns:
-        raise KeyError(f"Column 'iteration' not found in {csv_path}. Columns: {list(df.columns)}")
-
-    if "energy_mean" not in df.columns:
-        raise KeyError(f"Column 'energy_mean' not found in {csv_path}. Columns: {list(df.columns)}")
 
     fig, ax = make_column_figure()
 
@@ -42,12 +36,13 @@ def plot_energy_convergence(
 
     if exact_energy is not None:
         ax.axhline(exact_energy, linestyle="--", linewidth=1.0, label=f"Exact: {exact_energy:g}")
-        ax.legend(frameon=True)
+        ax.legend()
+
+    if title:
+        ax.set_title(title)
 
     ax.set_xlabel(pretty_label("iteration"))
     ax.set_ylabel(pretty_label("energy_mean"))
-    ax.set_title(title)
-
     disable_scientific_offset(ax)
     ax.grid(True, alpha=0.35)
 

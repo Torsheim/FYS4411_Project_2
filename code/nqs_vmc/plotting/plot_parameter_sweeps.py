@@ -1,4 +1,4 @@
-"""Plots for learning-rate, hidden-unit, and time-step sweeps."""
+"""Parameter-sweep plots."""
 
 from __future__ import annotations
 
@@ -15,7 +15,7 @@ def plot_parameter_sweep(
     x_column: str,
     y_column: str = "final_energy",
     exact_energy: float | None = None,
-    title: str = "Parameter sweep",
+    title: str | None = None,
 ) -> None:
     """Plot a parameter sweep result file."""
     df = pd.read_csv(csv_path)
@@ -49,12 +49,13 @@ def plot_parameter_sweep(
 
     if exact_energy is not None:
         ax.axhline(exact_energy, linestyle="--", linewidth=1.0, label=f"Exact: {exact_energy:g}")
-        ax.legend(frameon=True)
+        ax.legend()
+
+    if title:
+        ax.set_title(title)
 
     ax.set_xlabel(pretty_label(x_column))
     ax.set_ylabel(pretty_label(y_column))
-    ax.set_title(title)
-
     disable_scientific_offset(ax)
     ax.grid(True, alpha=0.35)
 
