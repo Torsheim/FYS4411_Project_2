@@ -1,0 +1,3 @@
+blocking:
+  input_path: results/processed/part_c_1p1d_2h_importance_local_energies.csv
+  output_path: results/selected/part_d_blocking_importance.csv

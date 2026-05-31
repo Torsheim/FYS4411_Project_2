@@ -1,0 +1,3 @@
+blocking:
+  input_path: results/processed/part_b_1p1d_2h_bruteforce_local_energies.csv
+  output_path: results/selected/part_d_blocking_bruteforce.csv

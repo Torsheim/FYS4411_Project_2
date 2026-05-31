@@ -42,14 +42,19 @@ def plot_parameter_sweep(
         df[y_column],
         yerr=yerr,
         marker="o",
-        linewidth=1.0,
-        elinewidth=0.7,
-        capsize=1.5,
+        linewidth=0.95,
+        elinewidth=0.65,
+        capsize=1.3,
     )
 
     if exact_energy is not None:
-        ax.axhline(exact_energy, linestyle="--", linewidth=1.0, label=f"Exact: {exact_energy:g}")
-        ax.legend()
+        ax.axhline(
+            exact_energy,
+            linestyle="--",
+            linewidth=0.95,
+            label=f"Exact: {exact_energy:g}",
+        )
+        ax.legend(loc="best", frameon=True, borderpad=0.35, handlelength=1.7)
 
     if title:
         ax.set_title(title)
@@ -57,6 +62,6 @@ def plot_parameter_sweep(
     ax.set_xlabel(pretty_label(x_column))
     ax.set_ylabel(pretty_label(y_column))
     disable_scientific_offset(ax)
-    ax.grid(True, alpha=0.35)
+    ax.grid(True, alpha=0.30)
 
     save_report_figure(fig, output_path)

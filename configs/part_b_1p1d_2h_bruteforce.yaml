@@ -1,0 +1,24 @@
+seed: 2026
+system:
+  num_particles: 1
+  dimensions: 1
+  omega: 1.0
+  include_interaction: false
+model:
+  num_hidden: 2
+  sigma: 1.0
+  parameter_scale: 0.01
+sampler:
+  type: metropolis
+  step_size: 1.0
+  n_samples: 8000
+  n_burn_in: 1000
+  thin: 1
+optimization:
+  optimizer: adam
+  learning_rate: 0.03
+  n_iterations: 100
+output:
+  history_path: results/selected/part_b_1p1d_2h_bruteforce.csv
+  samples_path: results/processed/part_b_1p1d_2h_bruteforce_local_energies.csv
+  checkpoint_path: results/checkpoints/part_b_1p1d_2h_bruteforce_model.npz

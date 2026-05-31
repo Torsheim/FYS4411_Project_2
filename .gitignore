@@ -1,0 +1,50 @@
+# Python
+__pycache__/
+*.py[cod]
+*.so
+*.egg-info/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Environments
+.venv/
+venv/
+env/
+.env
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Raw/generated results
+results/raw/*
+!results/raw/.gitkeep
+
+results/processed/*
+!results/processed/.gitkeep
+
+results/checkpoints/*
+!results/checkpoints/.gitkeep
+
+results/logs/*
+!results/logs/.gitkeep
+
+# Keep selected results, figures, and tables
+!results/selected/
+!results/figures/
+!results/tables/
+
+# LaTeX temporary files
+*.aux
+*.log
+*.out
+*.toc
+*.bbl
+*.blg
+*.fls
+*.fdb_latexmk
+*.synctex.gz
+
+# OS files
+.DS_Store
+Thumbs.db

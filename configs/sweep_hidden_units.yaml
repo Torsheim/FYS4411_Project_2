@@ -1,0 +1,28 @@
+seed: 2050
+system:
+  num_particles: 1
+  dimensions: 1
+  omega: 1.0
+  include_interaction: false
+model:
+  num_hidden: 2
+  sigma: 1.0
+  parameter_scale: 0.01
+sampler:
+  type: metropolis
+  step_size: 1.0
+  n_samples: 4000
+  n_burn_in: 1000
+  thin: 1
+optimization:
+  optimizer: adam
+  learning_rate: 0.03
+  n_iterations: 60
+output:
+  history_path: results/selected/sweep_placeholder.csv
+  samples_path: results/processed/sweep_placeholder_local_energies.csv
+  checkpoint_path: results/checkpoints/sweep_placeholder_model.npz
+sweep:
+  parameter: model.num_hidden
+  values: [1, 2, 4, 8, 16]
+  output_path: results/selected/part_b_hidden_units_sweep.csv

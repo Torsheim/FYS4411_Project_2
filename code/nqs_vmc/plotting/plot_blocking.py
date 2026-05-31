@@ -33,7 +33,7 @@ def plot_blocking(
 
     fig, ax = make_column_figure()
 
-    ax.plot(df[x_col], df[y_col], marker="o", linewidth=1.0)
+    ax.plot(df[x_col], df[y_col], marker="o", linewidth=0.95)
 
     if (df[x_col] > 0).all():
         ax.set_xscale("log", base=2)
@@ -43,6 +43,6 @@ def plot_blocking(
 
     ax.set_xlabel(pretty_label("block_size"))
     ax.set_ylabel(pretty_label("std_error"))
-    ax.grid(True, alpha=0.35)
+    ax.grid(True, alpha=0.30)
 
     save_report_figure(fig, output_path)

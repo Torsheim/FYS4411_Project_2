@@ -1,0 +1,14 @@
+seed: 2060
+system:
+  num_particles: 2
+  dimensions: 2
+  omega: 1.0
+  include_interaction: true
+model:
+  type: neural_jastrow
+  num_hidden: 8
+  parameter_scale: 0.01
+note: >
+  Optional placeholder config. The main scripts currently implement the RBM
+  solution for Parts b-e. Use code/nqs_vmc/models/neural_jastrow.py as a
+  starting point if you attempt Project 2f.

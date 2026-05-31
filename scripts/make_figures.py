@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """Generate report-ready figures.
 
-All figures are generated with a fixed one-column physical size and 10 pt
-text. In LaTeX, include with width=\columnwidth.
+All figures are generated with exact report-column width, 8.60 cm, and 10 pt
+text. Include in LaTeX with width=\columnwidth.
 """
 
 from __future__ import annotations

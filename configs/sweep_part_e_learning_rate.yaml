@@ -1,0 +1,31 @@
+seed: 2070
+system:
+  num_particles: 2
+  dimensions: 2
+  omega: 1.0
+  include_interaction: true
+  coulomb_epsilon: 1.0e-10
+model:
+  num_hidden: 16
+  sigma: 1.0
+  parameter_scale: 0.01
+sampler:
+  type: importance
+  time_step: 0.08
+  diffusion: 0.5
+  n_samples: 12000
+  n_burn_in: 3000
+  thin: 1
+optimization:
+  optimizer: adam
+  learning_rate: 0.005
+  n_iterations: 160
+output:
+  history_path: results/selected/sweep_part_e_learning_rate_placeholder.csv
+  samples_path: results/processed/sweep_part_e_learning_rate_placeholder_local_energies.csv
+  checkpoint_path: results/checkpoints/sweep_part_e_learning_rate_placeholder_model.npz
+sweep:
+  name: part_e_learning_rate_sweep
+  parameter: optimization.learning_rate
+  values: [0.002, 0.005, 0.01, 0.02]
+  output_path: results/selected/part_e_learning_rate_sweep.csv

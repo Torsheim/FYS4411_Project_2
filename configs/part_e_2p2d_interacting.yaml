@@ -1,0 +1,26 @@
+seed: 2030
+system:
+  num_particles: 2
+  dimensions: 2
+  omega: 1.0
+  include_interaction: true
+  coulomb_epsilon: 1.0e-10
+model:
+  num_hidden: 8
+  sigma: 1.0
+  parameter_scale: 0.01
+sampler:
+  type: importance
+  time_step: 0.03
+  diffusion: 0.5
+  n_samples: 12000
+  n_burn_in: 2000
+  thin: 1
+optimization:
+  optimizer: adam
+  learning_rate: 0.01
+  n_iterations: 150
+output:
+  history_path: results/selected/part_e_2p2d_interacting.csv
+  samples_path: results/processed/part_e_2p2d_interacting_local_energies.csv
+  checkpoint_path: results/checkpoints/part_e_2p2d_interacting_model.npz
