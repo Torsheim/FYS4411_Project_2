@@ -379,25 +379,25 @@ with 50000 samples per optimization iteration and 600 optimization iterations. T
 
 \subsection{Overall summary}
 
-Table~\ref{tab:summary} summarizes the main completed calculations and is the numerical reference point for the rest of this section. The table makes the contrast between the essentially exact non-interacting tests and the systematically higher interacting energies clear. The non-interacting harmonic-oscillator benchmarks are reproduced to high precision, validating the analytical local energy, parameter derivatives, samplers, and optimizer. The interacting quantum-dot calculations are less accurate, but the energies remain above the exact value, consistent with the variational principle. The larger-hidden-layer $\Nh=32$ production check did not improve the best energy estimate from the $\Nh=16$ run, illustrating that separately favorable hyperparameters do not necessarily combine into an optimal full calculation.
+Table~\ref{tab:summary} summarizes the main completed calculations and is the numerical reference point for the rest of this section. The table makes the contrast between the essentially exact non-interacting tests and the systematically higher interacting energies clear. The non-interacting harmonic-oscillator benchmarks are reproduced to high precision, validating the analytical local energy, parameter derivatives, samplers, and optimizer. The interacting quantum-dot calculations are less accurate, but the energies remain above the exact value, consistent with the variational principle. The larger-hidden-layer $\Nh=32$ production check did not improve the best energy estimate from the $\Nh=16$ run, illustrating that separately favorable hyperparameters do not necessarily combine into an optimal full calculation. The table separates the naive final-iteration Monte Carlo error from the more conservative blocking error whenever blocking was performed, so that statistical and systematic uncertainties are not conflated.
 
 \begin{center}
-\captionof{table}{Summary of the main completed energy estimates. All energies are in atomic units. The exact interacting benchmark is $E=3.0$.}
+\captionof{table}{Summary of the main completed energy estimates. Energies, naive errors, blocking errors, and exact values are in atomic units. A dash means that no separate blocking analysis was performed for that row.}
 \label{tab:summary}
-\setlength{\tabcolsep}{2.5pt}
-\begin{tabular}{@{}lccc@{}}
+\setlength{\tabcolsep}{1.4pt}
+\begin{tabularx}{\columnwidth}{@{}>{\raggedright\arraybackslash}Xcccc@{}}
 \toprule
-Calculation & $E$ [a.u.] & error [a.u.] & exact [a.u.] \\
+Calculation & $E$ & naive err. & block err. & exact \\
 \midrule
-BF, $P=1$, $D=1$ & 0.499984 & $2.1\cdot10^{-6}$ & 0.5 \\
-BF, $P=2$, $D=2$ & 1.999999 & $3.0\cdot10^{-6}$ & 2.0 \\
-IS, $P=1$, $D=1$ & 0.499988 & $1.7\cdot10^{-6}$ & 0.5 \\
-IS, $P=2$, $D=2$ & 1.999974 & $3.9\cdot10^{-6}$ & 2.0 \\
-interacting short & 3.1476 & 0.0150 & 3.0 \\
-interacting long & 3.0826 & 0.0082 & 3.0 \\
-larger $N_h$ check & 3.0965 & 0.0069 & 3.0 \\
+BF, $P=1$, $D=1$ & 0.499984 & $2.1\cdot10^{-6}$ & -- & 0.5 \\
+BF, $P=2$, $D=2$ & 1.999999 & $3.0\cdot10^{-6}$ & -- & 2.0 \\
+IS, $P=1$, $D=1$ & 0.499988 & $1.7\cdot10^{-6}$ & $1.97\cdot10^{-5}$ & 0.5 \\
+IS, $P=2$, $D=2$ & 1.999974 & $3.9\cdot10^{-6}$ & -- & 2.0 \\
+interacting short & 3.1476 & 0.0150 & -- & 3.0 \\
+interacting long & 3.0826 & 0.0082 & 0.0243 & 3.0 \\
+larger $N_h$ check & 3.0965 & 0.0069 & 0.0201 & 3.0 \\
 \bottomrule
-\end{tabular}
+\end{tabularx}
 \end{center}
 
 \subsection{Non-interacting brute-force benchmarks}
@@ -420,7 +420,7 @@ The same non-interacting test was repeated for two particles in two dimensions. 
 \setlength{\tabcolsep}{3pt}
 \begin{tabular}{@{}cccc@{}}
 \toprule
-Iter. & $E$ [a.u.] & error [a.u.] & acc. \\
+Iter. & $E$ [a.u.] & naive err. [a.u.] & acc. \\
 \midrule
 100 & 0.499984 & $2.1\cdot10^{-6}$ & 0.728 \\
 \bottomrule
@@ -439,7 +439,7 @@ The learning-rate sweep for the one-dimensional non-interacting problem is shown
 \setlength{\tabcolsep}{3pt}
 \begin{tabular}{@{}ccc@{}}
 \toprule
-$\eta$ & $E$ [a.u.] & error [a.u.] \\
+$\eta$ & $E$ [a.u.] & naive err. [a.u.] \\
 \midrule
 0.005 & 0.499994 & $1.6\cdot10^{-6}$ \\
 0.010 & 0.500050 & $1.2\cdot10^{-5}$ \\
@@ -460,7 +460,7 @@ The hidden-node sweep is shown in Figure~\ref{fig:partb-hidden} and Table~\ref{t
 \setlength{\tabcolsep}{3pt}
 \begin{tabular}{@{}ccc@{}}
 \toprule
-$N_h$ & $E$ [a.u.] & error [a.u.] \\
+$N_h$ & $E$ [a.u.] & naive err. [a.u.] \\
 \midrule
 1 & 0.500004 & $5.1\cdot10^{-6}$ \\
 2 & 0.499999 & $1.4\cdot10^{-6}$ \\
@@ -549,7 +549,7 @@ The hyperparameter sweeps suggested that larger hidden layers and a learning rat
 \begin{equation}
 E=3.09649\pm0.00685,
 \end{equation}
-with a conservative blocking error of $0.0201$. This did not improve the $\Nh=16$ energy, although it produced a slightly smaller naive error and a comparable blocking error, as seen by comparing Figures~\ref{fig:parte-long} and~\ref{fig:parte-final} and the values in Table~\ref{tab:e-main}. The comparison shows that the best settings found in separate one-parameter sweeps do not necessarily combine optimally. It also suggests that the interacting RBM optimization is limited by systematic optimization and ansatz errors, not only by Monte Carlo sampling noise.
+with a conservative blocking error of $0.0201$. This did not improve the $\Nh=16$ energy, although it produced a slightly smaller naive error and a comparable blocking error, as seen by comparing Figures~\ref{fig:parte-long} and~\ref{fig:parte-final} and the values in Table~\ref{tab:e-main}, where both error estimates are listed explicitly. The comparison shows that the best settings found in separate one-parameter sweeps do not necessarily combine optimally. It also suggests that the interacting RBM optimization is limited by systematic optimization and ansatz errors, not only by Monte Carlo sampling noise.
 
 
 \reportfigure{part_e_energy_convergence_interacting_long.pdf}{Longer interacting run with $\Nh=16$. The energy decreases from about $3.23$ to about $3.08$, approaching but not reaching the exact value $E=3.0$.}{fig:parte-long}
@@ -557,15 +557,15 @@ with a conservative blocking error of $0.0201$. This did not improve the $\Nh=16
 \reportfigure{part_e_energy_convergence_interacting_final.pdf}{Larger-hidden-layer interacting check with $\Nh=32$, learning rate $\eta=0.01$, and time step $\Delta t=0.08$. The final iteration gave $E=3.09649\pm0.00685$, which is higher than the best $\Nh=16$ long run despite using more hidden nodes and more samples.}{fig:parte-final}
 
 \begin{center}
-\captionof{table}{Interacting production runs. The $N_h=16$ run gave the lowest final energy, while the $N_h=32$ run is a larger-hidden-layer check.}
+\captionof{table}{Interacting production runs. The $N_h=16$ run gave the lowest final energy, while the $N_h=32$ run is a larger-hidden-layer check. The naive error is the final-iteration Monte Carlo error; the blocking error is the conservative correlated-sample estimate. All energies and errors are in atomic units.}
 \label{tab:e-main}
-\setlength{\tabcolsep}{3pt}
-\begin{tabular}{@{}cccc@{}}
+\setlength{\tabcolsep}{2pt}
+\begin{tabular}{@{}ccccc@{}}
 \toprule
-$N_h$ & $\eta$ & $E$ [a.u.] & error [a.u.] \\
+$N_h$ & $\eta$ & $E$ & naive err. & block err. \\
 \midrule
-16 & 0.005 & 3.08256 & 0.00818 \\
-32 & 0.010 & 3.09649 & 0.00685 \\
+16 & 0.005 & 3.08256 & 0.00818 & 0.0243 \\
+32 & 0.010 & 3.09649 & 0.00685 & 0.0201 \\
 \bottomrule
 \end{tabular}
 \end{center}
@@ -574,7 +574,7 @@ The blocking analysis of the two interacting production runs is shown in Figures
 
 \reportfigure{part_e_blocking_interacting_long.pdf}{Blocking analysis for the long interacting run. The conservative blocking error is about $0.0243$, larger than the naive iteration error.}{fig:parte-blocking}
 
-\reportfigure{part_e_blocking_interacting_final.pdf}{Blocking analysis for the final $\Nh=32$ interacting run. The conservative blocking error is about $0.0201$, comparable to the long $\Nh=16$ run.}{fig:parte-blocking-final}
+\reportfigure{part_e_blocking_interacting_final.pdf}{Blocking analysis for the larger-hidden-layer $\Nh=32$ interacting check. The conservative blocking error is about $0.0201$, comparable to the long $\Nh=16$ run.}{fig:parte-blocking-final}
 
 The selected numerical values from the long-run blocking curve are listed in Table~\ref{tab:e-blocking}; the largest value is the conservative error quoted for the $N_h=16$ result.
 
@@ -609,7 +609,7 @@ Figure~\ref{fig:parte-hidden} and Table~\ref{tab:parte-hidden} show the hidden-n
 \setlength{\tabcolsep}{3pt}
 \begin{tabular}{@{}ccc@{}}
 \toprule
-$N_h$ & $E$ [a.u.] & error [a.u.] \\
+$N_h$ & $E$ [a.u.] & naive err. [a.u.] \\
 \midrule
 4 & 3.1881 & 0.0138 \\
 8 & 3.1859 & 0.0147 \\
@@ -629,7 +629,7 @@ The learning-rate sweep is shown in Figure~\ref{fig:parte-lr} and Table~\ref{tab
 \setlength{\tabcolsep}{3pt}
 \begin{tabular}{@{}ccc@{}}
 \toprule
-$\eta$ & $E$ [a.u.] & error [a.u.] \\
+$\eta$ & $E$ [a.u.] & naive err. [a.u.] \\
 \midrule
 0.002 & 3.2183 & 0.0149 \\
 0.005 & 3.1709 & 0.0391 \\
@@ -649,7 +649,7 @@ The time-step sweep is shown in Figure~\ref{fig:parte-dt} and Table~\ref{tab:par
 \setlength{\tabcolsep}{3pt}
 \begin{tabular}{@{}ccc@{}}
 \toprule
-$\Delta t$ & $E$ [a.u.] & error [a.u.] \\
+$\Delta t$ & $E$ [a.u.] & naive err. [a.u.] \\
 \midrule
 0.03 & 3.2771 & 0.0138 \\
 0.05 & 3.2462 & 0.0152 \\
