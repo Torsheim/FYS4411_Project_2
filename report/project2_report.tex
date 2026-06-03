@@ -8,7 +8,6 @@
 \usepackage{geometry}
 \usepackage{amsmath,amssymb,amsfonts,bm}
 \usepackage{graphicx}
-\usepackage{multicol}
 \usepackage{booktabs}
 \usepackage{array}
 \usepackage{float}
@@ -677,24 +676,227 @@ For the interacting two-particle two-dimensional quantum dot, the exact benchmar
 
 The most concrete improvements would be to perform a joint sweep over $(\Nh,\eta,\Delta t)$ with repeated random seeds, introduce a decaying learning-rate schedule, freeze the optimized parameters and run a separate fixed-parameter production chain for the final blocking analysis, and replace ordinary ADAM optimization by stochastic reconfiguration or a natural-gradient method. A more explicitly correlated trial state, for example by multiplying the RBM by a Jastrow factor or by implementing the optional neural-network/Jastrow ansatz, would also be a natural next step. These changes directly target the dominant limitations observed here: optimization sensitivity and insufficient correlation in the interacting state.
 
+\appendix
+
+\section{Analytical details for the RBM ansatz}\label{app:derivations}
+
+This appendix gives the derivation used in the code. The wave function is
+\begin{equation}
+\Psi(\bX)=\frac{1}{Z}
+\exp\left[-\sum_{k=1}^{M}\frac{(X_k-a_k)^2}{2\sigma^2}\right]
+\prod_{j=1}^{\Nh}\left(1+e^{\theta_j}\right),
+\end{equation}
+with
+\begin{equation}
+\theta_j=b_j+\frac{1}{\sigma^2}\sum_{k=1}^{M}X_kw_{kj}.
+\end{equation}
+Taking the logarithm gives
+\begin{equation}
+\ln\Psi=\mathrm{const.}-\sum_{k=1}^{M}\frac{(X_k-a_k)^2}{2\sigma^2}
++\sum_{j=1}^{\Nh}\ln(1+e^{\theta_j}).
+\end{equation}
+For the first coordinate derivative,
+\begin{align}
+\frac{\partial\ln\Psi}{\partial X_k}
+&=-\frac{X_k-a_k}{\sigma^2}
++\sum_{j=1}^{\Nh}\frac{1}{1+e^{-\theta_j}}\frac{\partial\theta_j}{\partial X_k}\\
+&=-\frac{X_k-a_k}{\sigma^2}
++\frac{1}{\sigma^2}\sum_{j=1}^{\Nh}w_{kj}q_j.
+\end{align}
+Using
+\begin{equation}
+\frac{\partial q_j}{\partial X_k}=q_j(1-q_j)\frac{w_{kj}}{\sigma^2},
+\end{equation}
+the second logarithmic derivative is
+\begin{equation}
+\frac{\partial^2\ln\Psi}{\partial X_k^2}
+=-\frac{1}{\sigma^2}
++\frac{1}{\sigma^4}\sum_{j=1}^{\Nh}w_{kj}^2q_j(1-q_j).
+\end{equation}
+The identity
+\begin{equation}
+\frac{1}{\Psi}\frac{\partial^2\Psi}{\partial X_k^2}
+=
+\frac{\partial^2\ln\Psi}{\partial X_k^2}
++
+\left(\frac{\partial\ln\Psi}{\partial X_k}\right)^2
+\end{equation}
+then leads directly to the local energy in Eq.~\eqref{eq:local-energy-rbm}.
+
+For the parameter derivatives, the logarithmic derivative with respect to the visible bias is
+\begin{equation}
+\frac{\partial\ln\Psi}{\partial a_k}=\frac{X_k-a_k}{\sigma^2}.
+\end{equation}
+The hidden bias derivative is
+\begin{equation}
+\frac{\partial\ln\Psi}{\partial b_j}=q_j,
+\end{equation}
+and the weight derivative is
+\begin{equation}
+\frac{\partial\ln\Psi}{\partial w_{kj}}=\frac{X_kq_j}{\sigma^2}.
+\end{equation}
+These expressions are inserted into the covariance estimator
+\begin{equation}
+G_{\alpha}=2\left(\langle\EL O_{\alpha}\rangle-\langle\EL\rangle\langle O_{\alpha}\rangle\right).
+\end{equation}
+The quantum force used in importance sampling is
+\begin{equation}
+F_k=2\frac{\partial\ln\Psi}{\partial X_k}.
+\end{equation}
+
+As a consistency check, set $\bW=0$, $\ba=0$, and $\sigma^2=1/\omega$. Then
+\begin{equation}
+\Psi(\bX)\propto \exp\left[-\frac{\omega}{2}\sum_{k=1}^{M}X_k^2\right],
+\end{equation}
+which is the exact product ground state of $M=PD$ independent harmonic-oscillator coordinates. Inserting this in the local energy gives
+\begin{equation}
+\EL^{(0)}=\frac{M\omega}{2}=\frac{PD\omega}{2}.
+\end{equation}
+At $\omega=1$, this is the benchmark $E=PD/2$ used in the non-interacting calculations.
 
 
 
-\section*{Appendix: Use of AI/LLM Tools}
-\addcontentsline{toc}{section}{Appendix: Use of AI/LLM Tools}
+\section{Code structure and reproducibility}\label{app:code}
 
-ChatGPT was used as a limited supporting tool during this project. The tool was used during parts of the project work in 2026 through the ChatGPT web interface. The implementation, numerical experiments, figures, tables, and final scientific interpretation are my own responsibility.
+The code was organized so that the physical model, sampler, optimizer, statistics, and plotting routines are separated from the numerical input parameters.  All production runs are controlled by YAML files in \code{configs/}.  This means that the same Python implementation is used for the non-interacting benchmarks, the interacting calculations, and the hyperparameter sweeps; only the configuration file changes between runs.
 
-For the code, ChatGPT was used mainly for support while developing and cleaning the project. This included help with discussing repository organization, interpreting terminal errors, checking Git and \LaTeX{} commands, improving file names and structure, and making comments and code organization easier to read. I also used ChatGPT for debugging support and for suggestions about useful consistency checks. All code suggestions were reviewed before use, and the submitted code was tested by running the project workflow and unit tests.
+Table~\ref{tab:repo-folders} gives the main folders needed to understand and reproduce the project.  The detailed file tree in Listing~\ref{lst:tree} then shows the most important source files.  The repository contains additional generated files, but the folders below are the ones that should be inspected first.
 
-For the written report, ChatGPT was used as a language and feedback tool. It helped with proofreading, improving wording, checking notation consistency, and giving feedback on whether the report addressed the course evaluation criteria. I reviewed and edited the suggestions before including them in the final text.
+\begin{table}[H]
+\centering
+\caption{Main repository folders and their role in reproducibility.}
+\label{tab:repo-folders}
+\begin{tabularx}{\columnwidth}{@{}>{\raggedright\arraybackslash}p{0.24\columnwidth}X@{}}
+\toprule
+Folder & Role \\
+\midrule
+\code{code/} & Source package with the RBM model, Hamiltonian, samplers, optimizer, statistics, I/O, and plotting routines. \\
+\code{configs/} & YAML input files. These define the physical system, sampler, optimizer, random seed, and output paths. \\
+\code{scripts/} & Command-line programs for experiments, sweeps, blocking analysis, figures, and tables. \\
+\code{tests/} & Unit tests and smoke tests used before production runs. \\
+\code{results/} & Selected CSV files, processed samples, generated figures, tables, and checkpoints. \\
+\code{report/} & Final PDF report, \LaTeX{} source, and Overleaf archive. \\
+\bottomrule
+\end{tabularx}
+\end{table}
 
-For text assistance, level 0 means no LLM assistance, level 1 means language-only assistance, level 2 means editorial assistance, and level 3 means generative drafting. In this report the assistance was mainly level 1, with some level 2 editorial feedback for the AI declaration and general report structure. No report section was included without my own review and approval.
+\begin{lstlisting}[caption={Simplified repository tree.},label={lst:tree},basicstyle=\ttfamily\small]
+FYS4411_Project_2/
+  code/nqs_vmc/
+    models/gaussian_binary_rbm.py
+    physics/local_energy.py
+    physics/potentials.py
+    sampling/metropolis.py
+    sampling/importance_sampling.py
+    sampling/quantum_force.py
+    optimization/gradients.py
+    optimization/optimizers.py
+    optimization/trainer.py
+    statistics/blocking.py
+    io/config_loader.py
+    io/result_writer.py
+    plotting/
+  configs/
+  scripts/
+  tests/
+  results/
+  report/
+\end{lstlisting}
 
-For code assistance, level 0 means no LLM assistance, level 1 means debugging or explanation assistance, level 2 means short snippets or small blocks, level 3 means skeleton generation, and level 4 means substantial file-level generation. In this project the assistance was mainly level 1--2: debugging support, command checking, code cleanup suggestions, comments, naming, and short code suggestions. ChatGPT was not used to fabricate numerical results, choose final data, or replace my own calculations and scientific interpretation.
+The basic reproduction procedure is summarized in Table~\ref{tab:repro-workflow}.  The setup commands create an isolated environment, install the package, and run the tests.  The selected-results command then reruns the main validation cases, interacting runs, parameter sweeps, figure generation, and table generation.  I used the same workflow when regenerating the figures and tables for the report.
 
-All reported values were generated by running the project code in the GitHub repository. The numerical results were checked against exact diagonalization, analytic limits, unit tests, or other relevant consistency checks. I take responsibility for the submitted code, figures, tables, numerical values, and scientific interpretation, and I can explain the equations, algorithms, and results used in the final submission.
+\begin{table}[H]
+\centering
+\caption{Reproducibility workflow.  The exact terminal commands are shown in Listing~\ref{lst:commands}.}
+\label{tab:repro-workflow}
+\begin{tabularx}{\columnwidth}{@{}>{\raggedright\arraybackslash}p{0.25\columnwidth}X@{}}
+\toprule
+Stage & Description \\
+\midrule
+Environment & Create and activate a Python virtual environment. \\
+Installation & Install the Python dependencies and the local \code{nqs\_vmc} package. \\
+Testing & Run the unit tests for derivatives, local energy, samplers, blocking, and reproducibility. \\
+Selected pipeline & Run the selected experiments and regenerate the report figures and tables. \\
+Manual checks & Inspect selected CSV files, figures, and blocking tables before using them in the report. \\
+\bottomrule
+\end{tabularx}
+\end{table}
 
+\begin{lstlisting}[caption={Main setup and reproduction commands.},label={lst:commands},basicstyle=\ttfamily\small]
+python3 -m venv .venv
+source .venv/bin/activate
+python -m pip install --upgrade pip
+pip install -r requirements.txt
+pip install -e .
+pytest -q
+python scripts/reproduce_selected_results.py
+\end{lstlisting}
+
+Table~\ref{tab:config-groups} lists the configuration groups used for the main numerical results.  The individual file names are shown in Listing~\ref{lst:configs}.  Keeping these settings in separate YAML files was useful because it made the non-interacting validation runs, the interacting runs, and the parameter sweeps reproducible from the command line without editing the Python source code.
+
+\begin{table}[H]
+\centering
+\caption{Configuration groups used in the calculations.}
+\label{tab:config-groups}
+\begin{tabularx}{\columnwidth}{@{}>{\raggedright\arraybackslash}p{0.30\columnwidth}X@{}}
+\toprule
+Group & Purpose \\
+\midrule
+Non-interacting validation & Brute-force and importance-sampling runs for the exact harmonic-oscillator benchmarks. \\
+Blocking analysis & Blocking of saved local-energy samples to estimate conservative statistical errors. \\
+Interacting production & Longer interacting runs for the two-particle two-dimensional quantum dot. \\
+Hyperparameter sweeps & Sweeps over hidden nodes, learning rate, and Langevin time step. \\
+Report generation & Scripts that turn selected CSV files into PDF figures and \LaTeX{} tables. \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\begin{lstlisting}[caption={Selected configuration files.},label={lst:configs},basicstyle=\ttfamily\small]
+configs/part_b_1p1d_2h_bruteforce.yaml
+configs/part_b_2p2d_no_interaction_bruteforce.yaml
+configs/part_c_1p1d_2h_importance.yaml
+configs/part_c_2p2d_no_interaction_importance.yaml
+configs/part_d_blocking_importance.yaml
+configs/part_e_2p2d_interacting_long.yaml
+configs/part_e_2p2d_interacting_final.yaml
+configs/part_e_blocking_interacting_long.yaml
+configs/part_e_blocking_interacting_final.yaml
+configs/sweep_part_e_hidden_units.yaml
+configs/sweep_part_e_learning_rate.yaml
+configs/sweep_part_e_time_step.yaml
+\end{lstlisting}
+
+Listing~\ref{lst:runs} gives examples of individual commands.  These are useful when only one part of the calculation needs to be repeated.  For example, after changing the analytical local-energy expression, I first rerun a non-interacting validation case and the tests before using the interacting configurations.
+
+\begin{lstlisting}[caption={Examples of individual run commands.},label={lst:runs},basicstyle=\ttfamily\small]
+python scripts/run_experiment.py \
+  --config configs/part_b_1p1d_2h_bruteforce.yaml
+
+python scripts/run_experiment.py \
+  --config configs/part_c_1p1d_2h_importance.yaml
+
+python scripts/run_experiment.py \
+  --config configs/part_e_2p2d_interacting_long.yaml
+
+python scripts/run_blocking.py \
+  --config configs/part_e_blocking_interacting_long.yaml
+
+python scripts/run_sweep.py \
+  --config configs/sweep_part_e_hidden_units.yaml
+
+python scripts/make_figures.py
+python scripts/make_tables.py
+\end{lstlisting}
+
+The most important reproducibility point is that the benchmark and interacting calculations share the same implementation.  The non-interacting harmonic-oscillator runs therefore test the same local-energy, sampling, optimization, and I/O code that is later used for the Coulomb-interacting system.  This makes the exact non-interacting results a direct check of the numerical pipeline rather than a separate demonstration program.
+
+\section{Additional comments on limitations}\label{app:limitations}
+
+The present implementation uses closed-form derivatives and ADAM optimization. This was sufficient for the non-interacting benchmarks, but the interacting problem indicates that more advanced optimization may be useful. Stochastic reconfiguration or natural-gradient methods are often more stable for variational wave functions because they account for the geometry of the parameterized state space. A second limitation is that each hyperparameter sweep used relatively short runs and only one random seed. The sweep results should therefore be interpreted as guidance rather than final high-precision estimates.
+
+A further limitation is the production protocol for uncertainty estimation. The code saves local-energy samples from the last optimization iteration for blocking. A more rigorous protocol would save the optimized parameters, restart the sampler from several independent initial configurations, discard burn-in for each chain, and then block the fixed-parameter production samples. This would separate optimization noise from sampling noise more cleanly.
+
+The optional neural-network replacement of the RBM was not performed. A placeholder file for a neural-Jastrow model exists in the repository, but the reported results all use the Gaussian-binary RBM ansatz. Finally, the implementation does not include Slater determinants or explicit antisymmetrization, so it should not be used for general fermionic excited states without modification.
 
 \begin{thebibliography}{99}
 
@@ -746,10 +948,5 @@ University of Oslo.
 \url{https://compphysics.github.io/ComputationalPhysics2/doc/LectureNotes/_build/html/boltzmannmachines.html}
 
 \end{thebibliography}
-
-
-
-\clearpage
-\input{ai_declaration}
 
 \end{document}
